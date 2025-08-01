@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang='en' style='background-color: #fffaf0; color: #393939;'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Textarea Editor</title>
+</head>
+<body>
+    <div id='editor' style='margin: 2rem auto; width: 80%; height: 80vh; border-width: 2px; border-style: solid none;'></div>
+    <script type='module'>
+        import { createEditor } from './editor.js';
+        const editor_ = createEditor('editor');
+        editor_.setText(`# hello!`);
+        console.log(editor_.getText());
+    </script>
+</body>
+</html>
