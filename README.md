@@ -4,6 +4,6 @@ Hacky Python web editor. Developed for a WIP project. Wouldn't recommended anyon
 
 todo
 - preferences in json (themes?)
-- undo/redo stack
+- custom undo/redo stack
 - scrollbar
 - wrap text, line numbers, error checking, autocomplete, other language specs, ...
