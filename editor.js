@@ -15,19 +15,18 @@ const styles = [
     [String.raw`\b(and|as|assert|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield)\b`, 'color: #c55228; font-weight: bold'],
     [String.raw`\b(\d+|True|False|None)\b`, 'color: #b5601b'] ];
 const pattern = new RegExp(styles.map(p => `(${p[0].replace(/\(/g, '(?:')})`).join('|'), 'g');
-const text = '';
 
 
-export const createEditor = id => {
+export const createEditor = (id, text='') => {
     const ki = {'editor_' : id};
     const X = key => (ki[key] = key+'-'+crypto.randomUUID());
     const $ = key => document.getElementById(ki[key]);
 
 
     let editor_ = $('editor_');
-    editor_.tabIndex = -1;
+    editor_.tabIndex = 0;
     editor_.innerHTML =
-        `<textarea id='${X('editor')}' tabindex=0 aria-hidden='false' spellcheck='false'` +
+        `<textarea id='${X('editor')}' tabindex=-1 spellcheck='false'` +
             `style='z-index: 1; color: transparent; caret-color: ${caretColor}'>${text}</textarea>` +
         `<pre id='${X('syntax')}' tabindex=-1 aria-hidden='true'` +
             `style='z-index: 0; overflow: hidden; color: ${defaultColor}'></pre>` +
@@ -39,30 +38,27 @@ export const createEditor = id => {
         #${id} *::selection { background-color: ${selectionColor};
         #${ki['editor']} { caret-color: ${caretColor} } } </style>`)
     let [editor, syntax, cover] = [$('editor'), $('syntax'), $('cover')];
-    let inEditor = false;
 
 
     const highlight = () => {
         syntax.innerHTML = editor.value.replace(pattern, (match, ...args) => {
             let style = styles[args.findIndex(g => g!==undefined)][1];
-            return `<span style='${style}' tabindex='-1' aria-hidden='true'>${match}\u200B</span>`; }) + '\u200B'; }
+            return `<span style='${style}'>${match}\u200B</span>`; }) + '\u200B'; }
     const touchup = () => {
         let [V, S, E] = [editor.value, editor.selectionStart, editor.selectionEnd];
         let [lS, lE] = [Math.min(S, V.lastIndexOf('\n', S-1)+1), (V.indexOf('\n', E)+1 || V.length+1)-1];
-        let [bC, cC] = inEditor ? [lineColor, caretColor] : ['transparent', 'transparent'];
+        let [bC, cC] = (document.activeElement === editor) ? [lineColor, caretColor] : ['transparent', 'transparent'];
         V = V.replace('<', '\xa0').replace('>', '\xa0');
         cover.innerHTML =
             V.slice(0, lS) +
-            `<span id='${X('line')}' tabindex='-1' aria-hidden='true' style='display: inline-block; min-width: 100%; background-color: ${bC}'>` +
+            `<span id='${X('line')}' style='display: inline-block; min-width: 100%; background-color: ${bC}'>` +
                 V.slice(lS, S) +
-                `<span id='${X('caret')}' tabindex='-1' aria-hidden='true' style='caretColor: ${cC}'>` +
+                `<span id='${X('caret')}' style='caret-color: ${cC}'>` +
                     V.slice(S, E) +
                 `\u200B</span>` +
                 V.slice(E, lE) +
             `\u200B</span>` +
             V.slice(lE); }
-
-
     editor.onscroll = e => {
         syntax.scrollTop = cover.scrollTop = editor.scrollTop;
         syntax.scrollLeft = cover.scrollLeft = editor.scrollLeft; }
@@ -74,25 +70,15 @@ export const createEditor = id => {
         if(cB.right > eB.right) editor.scrollLeft += cB.right - eB.right;
         syntax.scrollTop = cover.scrollTop = editor.scrollTop;
         syntax.scrollLeft = cover.scrollLeft = editor.scrollLeft; }
-    
-    
     const tidy = () => { highlight(); touchup(); clampscroll(); };
+    
+
+    editor_.onfocus = e => { editor_.style.outline = `solid 5px ${outlineColor}`; }
+    editor_.onblur = e => { editor_.style.outline = 'none'; }
+    editor.onfocus = e => touchup();
+    editor.onblur = e => touchup();
     editor.oninput = e => tidy();
     editor.onselectionchange = e => tidy();
-
-
-    editor_.onfocus = e => {
-        editor_.style.zIndex = 9999;
-        editor_.style.outline = `solid 5px ${outlineColor}`; }
-    editor.onfocus = e => {
-        inEditor = true;
-        editor_.style.outline = 'none';
-        touchup(); }
-    editor.onblur = e => {
-        inEditor = false;
-        editor_.style.zIndex = 0;
-        editor_.style.outline = 'none';
-        touchup(); }
 
 
     editor_.onkeydown = e => {
@@ -139,3 +125,11 @@ export const createEditor = id => {
         [editor.value, editor.selectionStart, editor.selectionEnd] = [text, start, end];
         tidy(); }
     return editor_; }
+
+/*
+a = [*map(int, input().split())]
+print(int(a.count(1) 
+ < a.count(0)))
+
+^^ bug when delete from start of third line
+*/
