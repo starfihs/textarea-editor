@@ -121,5 +121,5 @@ export const createEditor = (id, text='') => {
 
 
     editor_.getState = () => [editor.value, editor.selectionStart, editor.selectionEnd];
-    editor_.setState = (text, start, end) => { [editor.value, editor.selectionStart, editor.selectionEnd] = [text, start, end]; }
+    editor_.setState = (text, start=0, end=0) => { [editor.value, editor.selectionStart, editor.selectionEnd] = [text, start, end]; }
     return editor_; }
