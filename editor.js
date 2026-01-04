@@ -96,7 +96,7 @@ export const createEditor = (id, text='') => {
         switch(e.key) {
             case 'Escape': editor.blur(); editor_.focus(); return;
             case 'Backspace':
-                if(e.shiftKey || e.ctrlKey || S !== E) return;
+                if(e.shiftKey || e.ctrlKey || S !== E || S === lS) return;
                 editor.selectionStart = Math.max(0, S-1-(pL && (pL>=S-lS) && (S-lS+tS-1)%tS)); return;
             case 'Enter':
                 const nL = !e.shiftKey && !e.ctrlKey && (pL + (tS-pL%tS)%tS + tS*/:( )*$/.test(V.slice(lS, E)));
@@ -121,15 +121,5 @@ export const createEditor = (id, text='') => {
 
 
     editor_.getState = () => [editor.value, editor.selectionStart, editor.selectionEnd];
-    editor_.setState = (text, start, end) => {
-        [editor.value, editor.selectionStart, editor.selectionEnd] = [text, start, end];
-        tidy(); }
+    editor_.setState = (text, start, end) => { [editor.value, editor.selectionStart, editor.selectionEnd] = [text, start, end]; }
     return editor_; }
-
-/*
-a = [*map(int, input().split())]
-print(int(a.count(1) 
- < a.count(0)))
-
-^^ bug when delete from start of third line
-*/
