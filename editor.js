@@ -8,14 +8,15 @@ const lineColor = '#ff370010';
 const outlineColor = '#ffe2da';
 const defaultColor = '#8534a2';
 const styles = [
-    [String.raw`"""(.|\n)*?("""|$)|'''(.|\n)*?('''|$)`, 'color: #5a8c32'],
-    [String.raw`"[^"\n]*("|\n|$)|'[^\'\n]*('|\n|$)`, 'color: #5a8c32'],
+    [String.raw`"""(.|\n)*?("""|$)|'''(.|\n)*?('''|$)`, 'color: #63a131'],
+    [String.raw`"[^"\n]*("|\n|$)|'[^\'\n]*('|\n|$)`, 'color: #63a131'],
     [String.raw`#.*`, 'color: #808080; font-style: italic'],
-    [String.raw`[<>+*/^\[\](){}|.\-%=!&~:;@,\\]`, 'color: #646464'],
-    [String.raw`\b(and|as|assert|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield)\b`, 'color: #c55228; font-weight: bold'],
-    [String.raw`\b(\d+|True|False|None)\b`, 'color: #b5601b'] ];
-const pattern = new RegExp(styles.map(p => `(${p[0].replace(/\(/g, '(?:')})`).join('|'), 'g');
-
+    [String.raw`[<>+*/^\[\]\(\){}|.\-%=!&~:;@,\\]|(\b(and|or|not)\b)`, 'color: #646464'],
+    [String.raw`\b(as|assert|async|await|break|case|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|match|nonlocal|pass|raise|return|try|while|with|yield)\b`, 'color: #c56224; font-weight: bold'],
+    [String.raw`\b(\d+|True|False|None)\b`, 'color: #b5601b'],
+    [String.raw`\b(str|int|float|complex|bool|bytes|bytearray|memoryview|list|tuple|set|frozenset|dict|map|range)\b(?=[(])`, 'color: #256fc9; font-style: italic'],
+    [String.raw`\b[a-zA-Z_]+\b(?=[(])`, 'color: #256fc9']]
+const pattern = new RegExp(styles.map(p => `(${p[0].replace(/\((?![?\]])/g, '(?:')})`).join('|'), 'g');
 
 export const createEditor = (id, text='') => {
     const ki = {'editor_' : id};
@@ -71,7 +72,7 @@ export const createEditor = (id, text='') => {
         syntax.scrollTop = cover.scrollTop = editor.scrollTop;
         syntax.scrollLeft = cover.scrollLeft = editor.scrollLeft; }
     const tidy = () => { highlight(); touchup(); clampscroll(); };
-    
+
 
     editor_.onfocus = e => { editor_.style.outline = `solid 5px ${outlineColor}`; }
     editor_.onblur = e => { editor_.style.outline = 'none'; }
