@@ -134,15 +134,8 @@ export const createEditor = id => {
                 return; } }
 
 
-    editor_.getText = () => editor.value;
-    editor_.setText = text => {
-        let [pActiveEl, pInEditor, pSelection, pRanges] = [document.activeElement, inEditor, getSelection(), []];
-        for(let i = 0; i < pSelection.rangeCount; i++) pRanges.push(pSelection.getRangeAt(i).cloneRange());
-        editor.focus(); editor.select();
-        document.execCommand('insertText', false, text);
-        editor.blur(); if(pActiveEl) pActiveEl.focus(); if(pInEditor) editor.focus();
-        let selection = getSelection();
-        selection.removeAllRanges();
-        for(const range of pRanges) if(document.contains(range.startContainer) && document.contains(range.endContainer)) selection.addRange(range);
+    editor_.getState = () => [editor.value, editor.selectionStart, editor.selectionEnd];
+    editor_.setState = (text, start, end) => {
+        [editor.value, editor.selectionStart, editor.selectionEnd] = [text, start, end];
         tidy(); }
     return editor_; }
