@@ -18,6 +18,7 @@ const styles = [
     [String.raw`\b[a-zA-Z_]+\b(?=[(])`, 'color: #256fc9']]
 const pattern = new RegExp(styles.map(p => `(${p[0].replace(/\((?![?\]])/g, '(?:')})`).join('|'), 'g');
 
+
 export const createEditor = (id, text='') => {
     const ki = {'editor_' : id};
     const X = key => (ki[key] = key+'-'+crypto.randomUUID());
@@ -36,8 +37,7 @@ export const createEditor = (id, text='') => {
     document.head.insertAdjacentHTML('beforeend', `<style>
         #${id} { position: relative; z-index: 0; overflow: auto; background-color: ${backgroundColor}; font-size: ${fontSize}px; font-family: ${fontFamily}; user-select: none; }
         #${id} > * { all: unset; display: block; box-sizing: border-box; scrollbar-width: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 1rem; white-space: pre; scroll-padding: 1rem; }
-        #${id} *::selection { background-color: ${selectionColor};
-        #${ki['editor']} { caret-color: ${caretColor} } } </style>`)
+        #${id} *::selection { background-color: ${selectionColor}; } </style>`)
     let [editor, syntax, cover] = [$('editor'), $('syntax'), $('cover')];
 
 
@@ -48,13 +48,13 @@ export const createEditor = (id, text='') => {
     const touchup = () => {
         let [V, S, E] = [editor.value, editor.selectionStart, editor.selectionEnd];
         let [lS, lE] = [Math.min(S, V.lastIndexOf('\n', S-1)+1), (V.indexOf('\n', E)+1 || V.length+1)-1];
-        let [bC, cC] = (document.activeElement === editor) ? [lineColor, caretColor] : ['transparent', 'transparent'];
-        V = V.replace('<', '\xa0').replace('>', '\xa0');
+        let bC = (document.activeElement === editor) ? lineColor : 'transparent';
+        V = V.replace(/</g, '\xa0').replace(/>/g, '\xa0');
         cover.innerHTML =
             V.slice(0, lS) +
-            `<span id='${X('line')}' style='display: inline-block; min-width: 100%; background-color: ${bC}'>` +
+            `<span id='${X('line')}' style='display: inline-block; min-width:100%; background-color: ${bC}'>` +
                 V.slice(lS, S) +
-                `<span id='${X('caret')}' style='caret-color: ${cC}'>` +
+                `<span id='${X('caret')}'>` +
                     V.slice(S, E) +
                 `\u200B</span>` +
                 V.slice(E, lE) +
@@ -100,7 +100,8 @@ export const createEditor = (id, text='') => {
                 if(e.shiftKey || e.ctrlKey || S !== E || S === lS) return;
                 editor.selectionStart = Math.max(0, S-1-(pL && (pL>=S-lS) && (S-lS+tS-1)%tS)); return;
             case 'Enter':
-                const nL = !e.shiftKey && !e.ctrlKey && (pL + (tS-pL%tS)%tS + tS*/:( )*$/.test(V.slice(lS, E)));
+                if(e.shiftKey || e.ctrlKey) return;
+                const nL = (S-lS < pL) ? (S-lS) : (pL - (pL%tS)%tS + tS*/:( )*$/.test(V.slice(lS, E)));
                 pr('\n'+' '.repeat(nL)); return;
             case 'Tab':
                 if(!e.shiftKey && S === E) { pr(' '.repeat(tS)); return; }
@@ -123,4 +124,4 @@ export const createEditor = (id, text='') => {
 
     editor_.getState = () => [editor.value, editor.selectionStart, editor.selectionEnd];
     editor_.setState = (text, start=0, end=0) => { [editor.value, editor.selectionStart, editor.selectionEnd] = [text, start, end]; }
-    return editor_; }
+    tidy(); return editor_; }
