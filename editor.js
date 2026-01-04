@@ -12,7 +12,7 @@ const styles = [
     [String.raw`"[^"\n]*("|\n|$)|'[^\'\n]*('|\n|$)`, 'color: #63a131'],
     [String.raw`#.*`, 'color: #808080; font-style: italic'],
     [String.raw`[<>+*/^\[\]\(\){}|.\-%=!&~:;@,\\]|(\b(and|or|not)\b)`, 'color: #646464'],
-    [String.raw`\b(as|assert|async|await|break|case|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|match|nonlocal|pass|raise|return|try|while|with|yield)\b`, 'color: #c56224; font-weight: bold'],
+    [String.raw`\b(as|assert|async|await|break|case|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|match|nonlocal|pass|raise|return|try|while|with|yield)\b`, 'color: #b5601b; font-weight: bold'],
     [String.raw`\b(\d+|True|False|None)\b`, 'color: #b5601b'],
     [String.raw`\b(str|int|float|complex|bool|bytes|bytearray|memoryview|list|tuple|set|frozenset|dict|map|range)\b(?=[(])`, 'color: #256fc9; font-style: italic'],
     [String.raw`\b[a-zA-Z_]+\b(?=[(])`, 'color: #256fc9']]
