@@ -66,12 +66,13 @@ export const createEditor = (id, text='') => {
     const clampscroll = () => {
         let eB = editor.getBoundingClientRect();
         let cB = $('caret').getBoundingClientRect();
+        console.log(cB);
         if(cB.bottom + fontSize > eB.bottom) editor.scrollTop += cB.bottom - eB.bottom + fontSize;
         if(cB.top - 2*fontSize < eB.top) editor.scrollTop += cB.top - eB.top - 2*fontSize;
         if(cB.right > eB.right) editor.scrollLeft += cB.right - eB.right;
         syntax.scrollTop = cover.scrollTop = editor.scrollTop;
         syntax.scrollLeft = cover.scrollLeft = editor.scrollLeft; }
-    const tidy = () => { highlight(); touchup(); clampscroll(); };
+    const tidy = () => { highlight(); touchup(); };
 
 
     editor_.onfocus = e => { editor_.style.outline = `solid 5px ${outlineColor}`; }
@@ -93,7 +94,7 @@ export const createEditor = (id, text='') => {
         const L = V.slice(lS, lE);
         const pL = L.match(/^ */)[0].length;
         const lines = L.split('\n');
-        const pr = text => { e.preventDefault(); document.execCommand('insertText', false, text.length ? text : '\u200B'); }
+        const pr = text => { e.preventDefault(); document.execCommand('insertText', false, text.length ? text : '\u200B'); clampscroll(); }
         switch(e.key) {
             case 'Escape': editor.blur(); editor_.focus(); return;
             case 'Backspace':
